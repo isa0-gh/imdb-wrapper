@@ -12,8 +12,6 @@ venv/
 env/
 
 # Tools
-.uv/
-uv.lock
 
 # Editors
 .vscode/
