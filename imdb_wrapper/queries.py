@@ -23,6 +23,18 @@ query($id: ID!) {
     akas(first: 8) { edges { node { text country { text } } } }
     trivia(first: 5) { edges { node { text { plainText } } } }
     goofs(first: 3) { edges { node { text { plainText } } } }
+    primaryImage { url width height caption { plainText } }
+    images(first: 8) { edges { node { url width height caption { plainText } } } }
+    videoStrip(first: 5) {
+      edges { node {
+        id
+        name { value }
+        contentType { displayName { value } }
+        runtime { value }
+        thumbnail { url width height }
+        playbackURLs { displayName { value } url mimeType }
+      }}
+    }
   }
 }
 """
