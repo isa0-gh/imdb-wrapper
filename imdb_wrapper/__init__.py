@@ -1,5 +1,5 @@
 from .client import IMDbClient
-from .models import AKA, BoxOffice, Credit, Movie, Person, Rating, ReleaseDate
+from .models import AKA, BoxOffice, Credit, Image, Movie, Person, PlaybackURL, Rating, ReleaseDate, Video
 
 __all__ = [
     "IMDbClient",
@@ -10,4 +10,7 @@ __all__ = [
     "Person",
     "Credit",
     "AKA",
+    "Image",
+    "Video",
+    "PlaybackURL",
 ]

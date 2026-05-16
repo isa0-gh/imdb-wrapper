@@ -1,10 +1,19 @@
 import json
 import urllib.request
 
-from .models import AKA, Credit, Movie, BoxOffice, Person, Rating, ReleaseDate
+from .models import AKA, Credit, Image, Movie, BoxOffice, Person, PlaybackURL, Rating, ReleaseDate, Video
 from .queries import FETCH_TITLE
 
 API_URL = "https://api.graphql.imdb.com/"
+
+
+def _image(node: dict) -> Image:
+    return Image(
+        url=node["url"],
+        width=node["width"],
+        height=node["height"],
+        caption=node.get("caption", {}).get("plainText") if node.get("caption") else None,
+    )
 
 
 class IMDbClient:
@@ -22,6 +31,25 @@ class IMDbClient:
         budget = t.get("productionBudget")
         gross = t.get("lifetimeGross")
         opening = t.get("openingWeekendGross")
+
+        videos = [
+            Video(
+                imdb_id=e["node"]["id"],
+                name=e["node"]["name"]["value"],
+                content_type=e["node"]["contentType"]["displayName"]["value"],
+                runtime_seconds=e["node"]["runtime"]["value"],
+                thumbnail=_image(e["node"]["thumbnail"]),
+                playback_urls=[
+                    PlaybackURL(
+                        quality=p["displayName"]["value"],
+                        url=p["url"],
+                        mime_type=p["mimeType"],
+                    )
+                    for p in e["node"]["playbackURLs"]
+                ],
+            )
+            for e in t["videoStrip"]["edges"]
+        ]
 
         return Movie(
             imdb_id=imdb_id,
@@ -54,6 +82,9 @@ class IMDbClient:
                 )
                 for c in t["principalCredits"]
             ],
+            poster=_image(t["primaryImage"]) if t.get("primaryImage") else None,
+            images=[_image(e["node"]) for e in t["images"]["edges"]],
+            videos=videos,
             akas=[AKA(e["node"]["text"], e["node"]["country"]["text"]) for e in t["akas"]["edges"]],
             trivia=[e["node"]["text"]["plainText"] for e in t["trivia"]["edges"]],
             goofs=[e["node"]["text"]["plainText"] for e in t["goofs"]["edges"]],
