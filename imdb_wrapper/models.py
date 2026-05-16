@@ -1,5 +1,20 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List
+
+
+@dataclass
+class SearchResult:
+    imdb_id: str
+    title: str
+    year: Optional[int]
+    title_type: Optional[str]
+    rating: Optional[float]
+    votes: Optional[int]
+    poster: Optional["Image"]
+    plot: Optional[str] = None
+    genres: list[str] = field(default_factory=list)
+    runtime_minutes: Optional[int] = None
+    certificate: Optional[str] = None
 
 
 @dataclass
