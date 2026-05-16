@@ -96,7 +96,7 @@ class IMDbClient:
                 opening_weekend_domestic=opening["gross"]["total"]["amount"] if opening else None,
             ),
             plot=t["plot"]["plotText"]["plainText"],
-            runtime_minutes=t["runtime"]["seconds"] // 60,
+            runtime_minutes=t["runtime"]["seconds"] // 60 if t.get("runtime") else None,
             genres=[g["text"] for g in t["genres"]["genres"]],
             certificate=t["certificate"]["rating"] if t.get("certificate") else None,
             languages=[l["text"] for l in t["spokenLanguages"]["spokenLanguages"]],

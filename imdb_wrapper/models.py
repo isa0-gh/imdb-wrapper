@@ -108,7 +108,7 @@ class Movie:
     rating: Rating
     box_office: BoxOffice
     plot: str
-    runtime_minutes: int
+    runtime_minutes: Optional[int]
     genres: list[str]
     certificate: Optional[str]
     languages: list[str]
@@ -154,7 +154,7 @@ class Movie:
             f"  Certificate    : {self.certificate or 'N/A'}",
             f"  Rating         : {self.rating.score}/10 ({self.rating.votes:,} votes)"
             + (f" | IMDb Top {self.rating.top_rank}" if self.rating.top_rank else ""),
-            f"  Runtime        : {self.runtime_minutes} min",
+            f"  Runtime        : {f'{self.runtime_minutes} min' if self.runtime_minutes else 'N/A'}",
             f"  Genres         : {', '.join(self.genres)}",
             f"  Languages      : {', '.join(self.languages)}",
             f"  Countries      : {', '.join(self.countries)}",
