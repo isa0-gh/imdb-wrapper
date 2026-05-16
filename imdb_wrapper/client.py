@@ -1,8 +1,8 @@
 import json
 import urllib.request
 
-from .models import AKA, Credit, Image, Movie, BoxOffice, Person, PlaybackURL, Rating, ReleaseDate, Video
-from .queries import FETCH_TITLE
+from .models import AKA, Credit, Image, Movie, BoxOffice, Person, PlaybackURL, Rating, ReleaseDate, SearchResult, Video
+from .queries import FETCH_TITLE, SEARCH_TITLES
 
 API_URL = "https://api.graphql.imdb.com/"
 
@@ -17,6 +17,33 @@ def _image(node: dict) -> Image:
 
 
 class IMDbClient:
+    def search(self, query: str, limit: int = 10) -> list[SearchResult]:
+        payload = json.dumps({"query": SEARCH_TITLES, "variables": {"query": query, "first": limit}}).encode()
+        req = urllib.request.Request(API_URL, data=payload, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req) as resp:
+            edges = json.loads(resp.read())["data"]["mainSearch"]["edges"]
+
+        results = []
+        for e in edges:
+            t = e["node"]["entity"]
+            if not t:
+                continue
+            rs = t.get("ratingsSummary") or {}
+            results.append(SearchResult(
+                imdb_id=t["id"],
+                title=t["titleText"]["text"],
+                year=t["releaseYear"]["year"] if t.get("releaseYear") else None,
+                title_type=t["titleType"]["text"] if t.get("titleType") else None,
+                rating=rs.get("aggregateRating"),
+                votes=rs.get("voteCount"),
+                poster=_image(t["primaryImage"]) if t.get("primaryImage") else None,
+                plot=t["plot"]["plotText"]["plainText"] if t.get("plot") else None,
+                genres=[g["text"] for g in t["genres"]["genres"]] if t.get("genres") else [],
+                runtime_minutes=t["runtime"]["seconds"] // 60 if t.get("runtime") else None,
+                certificate=t["certificate"]["rating"] if t.get("certificate") else None,
+            ))
+        return results
+
     def fetch(self, imdb_id: str) -> Movie:
         payload = json.dumps({"query": FETCH_TITLE, "variables": {"id": imdb_id}}).encode()
         req = urllib.request.Request(
