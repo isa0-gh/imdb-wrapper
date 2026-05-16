@@ -1,3 +1,32 @@
+SEARCH_TITLES = """
+query($query: String!, $first: Int!) {
+  mainSearch(first: $first, options: {
+    searchTerm: $query
+    type: TITLE
+    isExactMatch: false
+  }) {
+    edges {
+      node {
+        entity {
+          ... on Title {
+            id
+            titleText { text }
+            releaseYear { year }
+            titleType { text }
+            ratingsSummary { aggregateRating voteCount }
+            plot { plotText { plainText } }
+            genres { genres { text } }
+            runtime { seconds }
+            certificate { rating }
+            primaryImage { url width height caption { plainText } }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
 FETCH_TITLE = """
 query($id: ID!) {
   title(id: $id) {
