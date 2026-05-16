@@ -5,7 +5,7 @@ Contributions are welcome. Please follow the guidelines below.
 ## Setup
 
 ```bash
-git clone https://github.com/your-username/imdb-wrapper.git
+git clone https://github.com/isa0-gh/imdb-wrapper.git
 cd imdb-wrapper
 pip install -e .
 ```
