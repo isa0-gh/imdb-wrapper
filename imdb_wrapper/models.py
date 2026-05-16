@@ -55,6 +55,36 @@ class AKA:
 
 
 @dataclass
+class Image:
+    url: str
+    width: int
+    height: int
+    caption: Optional[str] = None
+
+
+@dataclass
+class PlaybackURL:
+    quality: str    # "1080p", "720p", "480p", "SD", "AUTO"
+    url: str
+    mime_type: str  # "video/mp4" or "application/x-mpegurl"
+
+
+@dataclass
+class Video:
+    imdb_id: str
+    name: str
+    content_type: str   # "Trailer", "Clip", etc.
+    runtime_seconds: int
+    thumbnail: Image
+    playback_urls: list[PlaybackURL] = field(default_factory=list)
+
+    def url(self, quality: str = "1080p") -> Optional[str]:
+        """Return playback URL for given quality, falling back to AUTO."""
+        by_quality = {p.quality: p.url for p in self.playback_urls}
+        return by_quality.get(quality) or by_quality.get("AUTO")
+
+
+@dataclass
 class Movie:
     imdb_id: str
     title: str
@@ -70,6 +100,9 @@ class Movie:
     countries: list[str]
     keywords: list[str]
     credits: list[Credit]
+    poster: Optional[Image] = None
+    images: list[Image] = field(default_factory=list)
+    videos: list[Video] = field(default_factory=list)
     akas: list[AKA] = field(default_factory=list)
     trivia: list[str] = field(default_factory=list)
     goofs: list[str] = field(default_factory=list)
@@ -88,6 +121,9 @@ class Movie:
     def stars(self) -> list[str]:
         c = self._credit("Stars")
         return c.names() if c else []
+
+    def trailers(self) -> list[Video]:
+        return [v for v in self.videos if v.content_type == "Trailer"]
 
     def __str__(self) -> str:
         bo = self.box_office
@@ -117,6 +153,14 @@ class Movie:
             f"  Also Known As  : {akas_str}",
             f"  Plot           : {self.plot}",
         ]
+        if self.poster:
+            lines.append(f"  Poster         : {self.poster.url}")
+        if self.trailers():
+            lines.append("\n  Trailers:")
+            for v in self.trailers():
+                lines.append(f"    [{v.runtime_seconds}s] {v.name}")
+                lines.append(f"      Thumbnail : {v.thumbnail.url}")
+                lines.append(f"      Stream    : {v.url('AUTO')}")
         if self.trivia:
             lines.append("\n  Trivia:")
             lines += [f"    - {t}" for t in self.trivia]
