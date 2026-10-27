@@ -2,6 +2,8 @@
 
 A minimal Python wrapper for the IMDb GraphQL API.
 
+> **Archived:** This project is no longer maintained because IMDb no longer supports API requests without an API key.
+
 > **⚠️ Educational Purposes Only**
 > This project is intended strictly for educational and personal learning purposes. Commercial or public use of IMDb data is not permitted. See [IMDb's data usage policy](https://help.imdb.com/article/imdb/general-information/can-i-use-imdb-data-in-my-software/G5JTRESSHJBBHTGX).
 
@@ -19,11 +21,11 @@ from imdb_wrapper import IMDbClient
 client = IMDbClient()
 movie = client.fetch("tt0241527")
 
-print(movie.title)          # Harry Potter and the Sorcerer's Stone
-print(movie.rating.score)   # 7.7
-print(movie.director())     # Chris Columbus
-print(movie.stars())        # ['Daniel Radcliffe', ...]
-print(movie.box_office)     # BoxOffice(budget=125000000, ...)
+print(movie.title)  # Harry Potter and the Sorcerer's Stone
+print(movie.rating.score)  # 7.7
+print(movie.director())  # Chris Columbus
+print(movie.stars())  # ['Daniel Radcliffe', ...]
+print(movie.box_office)  # BoxOffice(budget=125000000, ...)
 ```
 
 ## Structure
